@@ -1,0 +1,39 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.main-container{
+    justify-content: center;
+    padding: 50px;
+}
+
+.visor-box{
+    margin: 15px 0;
+}
+
+.box-calculator{
+    width: 100%;
+    background-color: rgb(51, 51, 51);
+    border-radius: 20px;
+    height: 520px;
+    padding: 20px;
+}
+
+.container-btn-group{
+    margin: 5px 0;
+}
+
+.btn-group{
+    gap: 5px;
+}
+
+.equals{
+    background-color: #0d6efd;
+    color: #ffffff;
+}
+.equals:hover{
+    background-color: rgb(51, 51, 51);
+    color: #0d6efd;
+}
