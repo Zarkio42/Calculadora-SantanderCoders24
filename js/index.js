@@ -3,6 +3,7 @@ const visor = document.getElementById("visor");
 let operador = "";
 let valorAtualVisor = "";
 let valorAnterior = "";
+let resultadoFinal = false;
 
 btn.forEach((item) => {
     item.addEventListener("click", () => {
@@ -12,6 +13,7 @@ btn.forEach((item) => {
             operador = "";
             valorAtualVisor = "";
             valorAnterior = "";
+            resultadoFinal = false;
         }
         else if (tecla == "Apagar") {
             visor.value = visor.value.slice(0, -1);
@@ -31,11 +33,12 @@ btn.forEach((item) => {
             }
         }
         else if (["+", "-", "*", "/"].includes(tecla)) {
-            if (valorAnterior) {
+            if (valorAnterior && valorAtualVisor && !resultadoFinal) {
                 valorAnterior = calcularResultado();
                 visor.value = valorAnterior;
-            }
-            else{
+            } else if (resultadoFinal) {
+                resultadoFinal = false;
+            } else {
                 valorAnterior = valorAtualVisor;
             }
             operador = tecla;
@@ -48,9 +51,14 @@ btn.forEach((item) => {
                 valorAnterior = visor.value;
                 operador = "";
                 valorAtualVisor = "";
+                resultadoFinal = true;
             }
         }
         else {
+            if (resultadoFinal) {
+                visor.value = "";
+                resultadoFinal = false;
+            }
             valorAtualVisor += tecla;
             visor.value += tecla;
         }
