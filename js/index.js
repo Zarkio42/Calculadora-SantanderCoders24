@@ -21,13 +21,33 @@ btn.forEach((item) => {
             if (visor.value.includes(".")) {
                 return;
             }
-            else if (visor.value == ""){
+            else if (visor.value == "") {
                 visor.value = "0.";
                 valorAtualVisor += "0.";
             }
             else {
                 visor.value += ".";
                 valorAtualVisor += ".";
+            }
+        }
+        else if (["+", "-", "*", "/"].includes(tecla)) {
+            if (valorAnterior) {
+                valorAnterior = calcularResultado();
+                visor.value = valorAnterior;
+            }
+            else{
+                valorAnterior = valorAtualVisor;
+            }
+            operador = tecla;
+            valorAtualVisor = "";
+            visor.value = "";
+        }
+        else if(tecla == "="){
+            if(operador && valorAnterior && valorAtualVisor){
+                visor.value = calcularResultado();
+                valorAnterior = visor.value;
+                operador = "";
+                valorAtualVisor = "";
             }
         }
         else {
@@ -37,3 +57,17 @@ btn.forEach((item) => {
     });
 
 });
+
+function calcularResultado() {
+    let resultado;  
+    let valor1 = parseFloat(valorAnterior);
+    let valor2 = parseFloat(valorAtualVisor);
+
+    switch (operador){
+        case "+":
+            resultado = valor1 + valor2;
+            break;
+    }
+
+    return resultado.toString();
+};
