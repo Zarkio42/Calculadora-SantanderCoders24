@@ -70,6 +70,9 @@ function calcularResultado() {
         case "-":
             resultado = valor1 - valor2;
             break;
+        case "*":
+            resultado = valor1 * valor2;
+            break;
     }
 
     return resultado.toString();
