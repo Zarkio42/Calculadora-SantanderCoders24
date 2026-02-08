@@ -14,10 +14,9 @@ O objetivo deste projeto não era apenas desenvolver uma calculadora, mas sim pr
 - **JavaScript**: Lógica de funcionamento da calculadora.
 - **Bootstrap**: Biblioteca CSS para garantir responsividade e uma melhor aparência.
 
-## Como Usar
+## Deploy
+[Clique aqui para ver a calculadora!](https://zarkio42.github.io/Calculadora-SantanderCoders24/)
 
-1. Clone ou faça o download do repositório.
-2. Abra o arquivo `index.html` em um navegador web.
-3. Utilize os botões na interface para realizar cálculos.
+
 
 
