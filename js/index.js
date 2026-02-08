@@ -1,91 +1,172 @@
-const btn = document.querySelectorAll(".btn");
-const visor = document.getElementById("visor");
-let operador = "";
-let valorAtualVisor = "";
-let valorAnterior = "";
-let resultadoFinal = false;
-
-btn.forEach((item) => {
-    item.addEventListener("click", () => {
-        let tecla = item.textContent;
-        if (tecla == "C") {
-            visor.value = "";
-            operador = "";
-            valorAtualVisor = "";
-            valorAnterior = "";
-            resultadoFinal = false;
-        }
-        else if (tecla == "Apagar") {
-            visor.value = visor.value.slice(0, -1);
-            valorAtualVisor = visor.value;
-        }
-        else if (tecla == ",") {
-            if (visor.value.includes(".")) {
-                return;
-            }
-            else if (visor.value == "") {
-                visor.value = "0.";
-                valorAtualVisor += "0.";
-            }
-            else {
-                visor.value += ".";
-                valorAtualVisor += ".";
-            }
-        }
-        else if (["+", "-", "*", "/"].includes(tecla)) {
-            if (valorAnterior && valorAtualVisor && !resultadoFinal) {
-                valorAnterior = calcularResultado();
-                visor.value = valorAnterior;
-            } else if (resultadoFinal) {
-                resultadoFinal = false;
-            } else {
-                valorAnterior = valorAtualVisor;
-            }
-            operador = tecla;
-            valorAtualVisor = "";
-            visor.value = "";
-        }
-        else if(tecla == "="){
-            if(operador && valorAnterior && valorAtualVisor){
-                visor.value = calcularResultado();
-                valorAnterior = visor.value;
-                operador = "";
-                valorAtualVisor = "";
-                resultadoFinal = true;
-            }
-        }
-        else {
-            if (resultadoFinal) {
-                visor.value = "";
-                resultadoFinal = false;
-            }
-            valorAtualVisor += tecla;
-            visor.value += tecla;
-        }
-    });
-
-});
-
-function calcularResultado() {
-    let resultado;  
-    let valor1 = parseFloat(valorAnterior);
-    let valor2 = parseFloat(valorAtualVisor);
-
-    switch (operador){
-        case "+":
-            resultado = valor1 + valor2;
-            break;
-        case "-":
-            resultado = valor1 - valor2;
-            break;
-        case "*":
-            resultado = valor1 * valor2;
-            break;
-        case "/":
-            resultado = valor1 / valor2;
-            break;
-        
+class Calculator {
+    constructor(previousOperandTextElement, currentOperandTextElement) {
+        this.previousOperandTextElement = previousOperandTextElement;
+        this.currentOperandTextElement = currentOperandTextElement;
+        this.clear();
     }
 
-    return resultado.toString();
-};
+    clear() {
+        this.currentOperand = '';
+        this.previousOperand = '';
+        this.operation = undefined;
+    }
+
+    delete() {
+        this.currentOperand = this.currentOperand.toString().slice(0, -1);
+    }
+
+    appendNumber(number) {
+        if (number === ',' || number === '.') {
+            if (this.currentOperand.includes('.')) return;
+            this.currentOperand = this.currentOperand.toString() + '.';
+        } else {
+            this.currentOperand = this.currentOperand.toString() + number.toString();
+        }
+    }
+
+    chooseOperation(operation) {
+        if (this.currentOperand === '') return;
+        if (this.previousOperand !== '') {
+            this.compute();
+        }
+        this.operation = operation;
+        this.previousOperand = this.currentOperand;
+        this.currentOperand = '';
+    }
+
+    compute() {
+        let computation;
+        const prev = parseFloat(this.previousOperand);
+        const current = parseFloat(this.currentOperand);
+
+        if (isNaN(prev) || isNaN(current)) return;
+
+        switch (this.operation) {
+            case '+':
+                computation = prev + current;
+                break;
+            case '-':
+                computation = prev - current;
+                break;
+            case '*':
+                computation = prev * current;
+                break;
+            case '÷':
+                computation = prev / current;
+                break;
+            default:
+                return;
+        }
+
+        this.currentOperand = computation;
+        this.operation = undefined;
+        this.previousOperand = '';
+    }
+
+    getDisplayNumber(number) {
+        const stringNumber = number.toString();
+        const integerDigits = parseFloat(stringNumber.split('.')[0]);
+        const decimalDigits = stringNumber.split('.')[1];
+        
+        let integerDisplay;
+        
+        if (isNaN(integerDigits)) {
+            integerDisplay = '';
+        } else {
+            integerDisplay = integerDigits.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+        }
+
+        if (decimalDigits != null) {
+            return `${integerDisplay},${decimalDigits}`;
+        } else {
+            return integerDisplay;
+        }
+    }
+
+    updateDisplay() {
+        this.currentOperandTextElement.innerText = 
+            this.getDisplayNumber(this.currentOperand);
+        
+        if (this.operation != null) {
+            this.previousOperandTextElement.innerText = 
+                `${this.getDisplayNumber(this.previousOperand)} ${this.operation}`;
+        } else {
+            this.previousOperandTextElement.innerText = '';
+        }
+    }
+}
+
+const numberButtons = document.querySelectorAll('[data-number]');
+const operationButtons = document.querySelectorAll('[data-operation]');
+const equalsButton = document.querySelector('[data-equals]');
+const deleteButton = document.querySelector('[data-delete]');
+const allClearButton = document.querySelector('[data-all-clear]');
+const previousOperandTextElement = document.querySelector('[data-previous-operand]');
+const currentOperandTextElement = document.querySelector('[data-current-operand]');
+
+const calculator = new Calculator(previousOperandTextElement, currentOperandTextElement);
+
+numberButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        calculator.appendNumber(button.innerText);
+        calculator.updateDisplay();
+    })
+});
+
+operationButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        calculator.chooseOperation(button.innerText);
+        calculator.updateDisplay();
+    })
+});
+
+equalsButton.addEventListener('click', button => {
+    calculator.compute();
+    calculator.updateDisplay();
+});
+
+allClearButton.addEventListener('click', button => {
+    calculator.clear();
+    calculator.updateDisplay();
+});
+
+deleteButton.addEventListener('click', button => {
+    calculator.delete();
+    calculator.updateDisplay();
+});
+
+document.addEventListener('keydown', (e) => {
+    if ((e.key >= 0 && e.key <= 9)) {
+        calculator.appendNumber(e.key);
+        calculator.updateDisplay();
+    }
+    if (e.key === '.' || e.key === ',') {
+        calculator.appendNumber(',');
+        calculator.updateDisplay();
+    }
+    if (e.key === '+' || e.key === '-') {
+        calculator.chooseOperation(e.key);
+        calculator.updateDisplay();
+    }
+    if (e.key === '*') {
+        calculator.chooseOperation('*');
+        calculator.updateDisplay();
+    }
+    if (e.key === '/') {
+        calculator.chooseOperation('÷');
+        calculator.updateDisplay();
+    }
+    if (e.key === 'Enter' || e.key === '=') {
+        e.preventDefault();
+        calculator.compute();
+        calculator.updateDisplay();
+    }
+    if (e.key === 'Backspace') {
+        calculator.delete();
+        calculator.updateDisplay();
+    }
+    if (e.key === 'Escape') {
+        calculator.clear();
+        calculator.updateDisplay();
+    }
+});
